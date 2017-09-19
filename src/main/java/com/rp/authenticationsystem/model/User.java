@@ -15,6 +15,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 
 import com.rp.authenticationsystem.commons.PatternEnum;
 
@@ -35,7 +37,7 @@ public class User {
 	private String lastName;
 	
 	@NotEmpty()
-	@Pattern(regexp = PatternEnum.Constants.EMAIL_VALUE)
+	@Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
 	private String emailId;
 	
 	@NotEmpty()
