@@ -3,11 +3,19 @@ package com.rp.authenticationsystem.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Address {
 
 	@Id
@@ -26,13 +34,17 @@ public class Address {
 	
 	private String zip;
 	
+	@CreatedBy
 	private String createdBy;
-	
+
+	@CreatedDate
 	private LocalDateTime createdDate;
-	
-	private String updatedBy;
-	
-	private LocalDateTime updatedDate;
+
+	@LastModifiedBy
+	private String lastModifiedBy;
+
+	@LastModifiedDate
+	private LocalDateTime lastModifiedDate;
 	
 	public Address() {
 		// TODO Auto-generated constructor stub
@@ -110,21 +122,22 @@ public class Address {
 		this.createdDate = createdDate;
 	}
 
-	public String getUpdatedBy() {
-		return updatedBy;
+	public String getLastModifiedBy() {
+		return lastModifiedBy;
 	}
 
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
+	public void setLastModifiedBy(String lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
 	}
 
-	public LocalDateTime getUpdatedDate() {
-		return updatedDate;
+	public LocalDateTime getLastModifiedDate() {
+		return lastModifiedDate;
 	}
 
-	public void setUpdatedDate(LocalDateTime updatedDate) {
-		this.updatedDate = updatedDate;
+	public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
+
 	
 	
 }
