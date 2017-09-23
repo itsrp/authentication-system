@@ -1,5 +1,6 @@
 package com.rp.authenticationsystem.service;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.transaction.Transactional;
@@ -15,7 +16,11 @@ public class UserServiceImpl implements IUserService{
 	
 	private Logger LOGGER = Logger.getLogger(UserServiceImpl.class.getName());
 	
+	@Autowired
 	private IUserRepository userRepository;
+	
+	@Autowired
+	private IMessageService messageService;
 
 	@Override
 	@Transactional
@@ -47,8 +52,9 @@ public class UserServiceImpl implements IUserService{
 	@Override
 	@Transactional
 	public void signUp(User user) {
+		user.setVerifyCode(UUID.randomUUID().toString());
 		save(user);
-		//TODO email service impl
+		messageService.sendVerificationCode(user);
 		
 	}
 	

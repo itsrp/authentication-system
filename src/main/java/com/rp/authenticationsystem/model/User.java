@@ -3,6 +3,7 @@ package com.rp.authenticationsystem.model;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
@@ -41,7 +42,8 @@ public class User {
 	private String lastName;
 
 	@NotEmpty()
-	@Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
+	@Pattern(regexp = PatternEnum.Constants.EMAIL_VALUE)
+	@Column(unique=true)
 	private String emailId;
 
 	@NotEmpty()
@@ -50,6 +52,7 @@ public class User {
 
 	@NotEmpty()
 	@Pattern(regexp = PatternEnum.Constants.MOBILE_VALUE)
+	@Column(unique=true)
 	private String mobile;
 
 	@OneToOne

@@ -22,4 +22,5 @@ public class AuthenticationSystemApplication {
     public AuditorAware<String> auditorAware() {
         return new AuditorAwareImpl();
     }
+	
 }
