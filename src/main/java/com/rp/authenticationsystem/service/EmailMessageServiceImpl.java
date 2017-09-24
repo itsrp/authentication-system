@@ -26,7 +26,7 @@ public class EmailMessageServiceImpl implements IMessageService {
 	@Override
 	public void sendVerificationCode(User user) {
 		
-		String body = String.format("To verify, please click on below link.\n%s/userId=%s&code=%s",
+		String body = String.format("To verify, please click on below link.\n%s?userId=%s&code=%s",
 				getBasePath(),
 				user.getId(),
 				user.getVerifyCode());

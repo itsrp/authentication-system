@@ -8,5 +8,6 @@ import com.rp.authenticationsystem.model.User;
 @Repository
 public interface IUserRepository extends JpaRepository<User, Long>{
 
+	User findByEmailId(String emailId);
 	
 }

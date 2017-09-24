@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rp.authenticationsystem.model.User;
@@ -30,6 +31,22 @@ public class UserController {
 		userService.signUp(user);
 		Response response = new Response(201, "Account created.");
 		return new ResponseEntity<Response>(response, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value = "/verification", method = RequestMethod.GET)
+	public ResponseEntity<Response> verifyEmail(@RequestParam Long userId, @RequestParam String code) {
+		LOGGER.info("Email verification request for user:" + userId);
+		userService.verifyEmail(userId, code);
+		Response response = new Response(200, "Email verified.");
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/regenerateVerifyCode", method = RequestMethod.GET)
+	public ResponseEntity<Response> regenerateVerificationCode(@RequestParam String emailId) {
+		LOGGER.info("Regenerate Email verification code request for email:" + emailId);
+		userService.regenerateVerifyCode(emailId);
+		Response response = new Response(200, "Verification code sent to emailId. Please verify.");
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 
 	@Autowired

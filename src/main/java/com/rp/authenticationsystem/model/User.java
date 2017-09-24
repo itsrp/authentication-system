@@ -65,9 +65,12 @@ public class User {
 	@Null
 	private String verifyCode;
 
-	@Null
-	private Boolean isVerified;
-
+	private boolean verified;
+	
+	private boolean deleted;
+	
+	private boolean blocked;
+	
 	@CreatedBy
 	private String createdBy;
 
@@ -148,6 +151,38 @@ public class User {
 		this.roles = roles;
 	}
 
+	public String getVerifyCode() {
+		return verifyCode;
+	}
+
+	public void setVerifyCode(String verifyCode) {
+		this.verifyCode = verifyCode;
+	}
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -172,22 +207,6 @@ public class User {
 		this.lastModifiedBy = lastModifiedBy;
 	}
 
-	public String getVerifyCode() {
-		return verifyCode;
-	}
-
-	public void setVerifyCode(String verifyCode) {
-		this.verifyCode = verifyCode;
-	}
-
-	public Boolean getIsVerified() {
-		return isVerified;
-	}
-
-	public void setIsVerified(Boolean isVerified) {
-		this.isVerified = isVerified;
-	}
-
 	public LocalDateTime getLastModifiedDate() {
 		return lastModifiedDate;
 	}
@@ -195,5 +214,8 @@ public class User {
 	public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
+
+	
+	
 
 }
