@@ -47,7 +47,6 @@ public class User {
 	private String emailId;
 
 	@NotEmpty()
-	@Size(min = 8, max = 15)
 	private String password;
 
 	@NotEmpty()

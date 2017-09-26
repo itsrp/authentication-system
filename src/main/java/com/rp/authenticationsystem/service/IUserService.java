@@ -9,4 +9,6 @@ public interface IUserService extends ICrudService<User, Long> {
 	void verifyEmail(Long userId, String code);
 
 	void regenerateVerifyCode(String emailId);
+
+	String login(String emailId, String password);
 }

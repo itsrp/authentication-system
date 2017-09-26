@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rp.authenticationsystem.encryption.HashingUtil;
 import com.rp.authenticationsystem.model.User;
 import com.rp.authenticationsystem.response.Response;
 import com.rp.authenticationsystem.service.IUserService;
@@ -46,6 +48,16 @@ public class UserController {
 		LOGGER.info("Regenerate Email verification code request for email:" + emailId);
 		userService.regenerateVerifyCode(emailId);
 		Response response = new Response(200, "Verification code sent to emailId. Please verify.");
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public ResponseEntity<Response> login(@RequestHeader String authorization) {
+		String[] extractedAuthHeader = HashingUtil.extractAuthHeader(authorization);
+		LOGGER.info("Login request for username:" + extractedAuthHeader[0]);
+		String token = userService.login(extractedAuthHeader[0], extractedAuthHeader[1]);
+		Response response = new Response(200, "LoggedIn successfully.");
+		response.setData(token);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 

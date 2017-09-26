@@ -12,12 +12,15 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.rp.authenticationsystem.exception.BadRequestException;
 import com.rp.authenticationsystem.exception.ConflictException;
 import com.rp.authenticationsystem.exception.ForbiddenException;
+import com.rp.authenticationsystem.exception.NotAuthorizedException;
 import com.rp.authenticationsystem.exception.NotFoundException;
+import com.rp.authenticationsystem.model.Token;
 import com.rp.authenticationsystem.model.User;
 import com.rp.authenticationsystem.repository.IUserRepository;
 
@@ -32,6 +35,9 @@ public class UserServiceImpl implements IUserService{
 	@Autowired
 	private IMessageService messageService;
 	
+	@Autowired
+	private ITokenService tokenService;
+	
 	@Value("${auth.app.expire.email.link.time}")
 	private String expireTimeoutInterval;
 	
@@ -45,6 +51,7 @@ public class UserServiceImpl implements IUserService{
 	@Transactional
 	public void save(User entity) {
 		LOGGER.info("Saving user with email: " + entity.getEmailId());
+		entity.setPassword(BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt(12)));
 		userRepository.save(entity);
 	}
 
@@ -122,6 +129,38 @@ public class UserServiceImpl implements IUserService{
 		}
 		isAlreadyVerified(user);
 		signUp(user);
+	}
+
+	@Override
+	public String login(String emailId, String password) {
+		User user = userRepository.findByEmailId(emailId);
+		if(user == null) {
+			throw new NotFoundException("User not found.");
+		}
+		if(user.isDeleted()) {
+			throw new NotFoundException("User is deleted.");
+		}
+		if(!user.isVerified()) {
+			throw new ForbiddenException("User is not verified. Please verify.");
+		}
+		if(user.isBlocked()) {
+			throw new ForbiddenException("User is blocked. Please contact administrator.");
+		}
+		if(!BCrypt.checkpw(password, user.getPassword())) {
+			throw new NotAuthorizedException("Username or Password is wrong.");
+		}
+
+		return createToken(user);
+	}
+
+	private String createToken(User user) {
+		Token token = new Token();
+		token.setLoggedInDateTIme(LocalDateTime.now());
+		token.setUser(user);
+		String tokenCode = UUID.randomUUID().toString();
+		token.setCode(tokenCode);
+		tokenService.save(token);
+		return tokenCode;
 	}
 	
 }
