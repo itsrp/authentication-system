@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import com.rp.authenticationsystem.constants.EmailTemplate;
 import com.rp.authenticationsystem.exception.BadRequestException;
 import com.rp.authenticationsystem.exception.ConflictException;
 import com.rp.authenticationsystem.exception.ForbiddenException;
@@ -79,8 +80,8 @@ public class UserServiceImpl implements IUserService{
 
 	@Override
 	@Transactional
-	public void verifyEmail(Long userId, String code) {
-		User user = userRepository.findOne(userId);
+	public void verifyEmail(String emailId, String code) {
+		User user = userRepository.findByEmailId(emailId);
 		if(user == null) {
 			throw new NotFoundException("User not found. Please contact administrator.");
 		}
@@ -132,7 +133,50 @@ public class UserServiceImpl implements IUserService{
 	}
 
 	@Override
-	public String login(String emailId, String password) {
+	public String login(String emailId, String password, boolean forceLogin) {
+		User user = getUser(emailId);
+		if(!BCrypt.checkpw(password, user.getPassword())) {
+			throw new NotAuthorizedException("Username or Password is wrong.");
+		}
+		
+		return tokenService.createToken(user, forceLogin);
+	}
+
+	private String createToken(User user) {
+		Token token = new Token();
+		token.setLoggedInDateTIme(LocalDateTime.now());
+		token.setUser(user);
+		String tokenCode = UUID.randomUUID().toString();
+		token.setCode(tokenCode);
+		tokenService.save(token);
+		return tokenCode;
+	}
+
+	@Override
+	public void forgotPassword(String emailId) {
+		User user = getUser(emailId);
+		String newPassword = UUID.randomUUID().toString();
+		updatePassword(user, newPassword);
+		messageService.sendNewPassword(user, newPassword);
+	}
+
+	@Override
+	public void changePassword(String emailId, String oldPassword, String newPassword) {
+		User user = getUser(emailId);
+		if(!BCrypt.checkpw(oldPassword, user.getPassword())) {
+			throw new NotAuthorizedException("Username or Password is wrong.");
+		}
+		updatePassword(user, newPassword);
+		messageService.sendNotification(user.getEmailId(), EmailTemplate.PASSWORD_CHANGED);
+	}
+	
+	private void updatePassword(User user, String newPassword) {
+		user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt(12)));
+		userRepository.save(user);
+		tokenService.expireToken(user.getId());
+	}
+
+	private User getUser(String emailId) {
 		User user = userRepository.findByEmailId(emailId);
 		if(user == null) {
 			throw new NotFoundException("User not found.");
@@ -146,21 +190,9 @@ public class UserServiceImpl implements IUserService{
 		if(user.isBlocked()) {
 			throw new ForbiddenException("User is blocked. Please contact administrator.");
 		}
-		if(!BCrypt.checkpw(password, user.getPassword())) {
-			throw new NotAuthorizedException("Username or Password is wrong.");
-		}
-
-		return createToken(user);
+		return user;
 	}
 
-	private String createToken(User user) {
-		Token token = new Token();
-		token.setLoggedInDateTIme(LocalDateTime.now());
-		token.setUser(user);
-		String tokenCode = UUID.randomUUID().toString();
-		token.setCode(tokenCode);
-		tokenService.save(token);
-		return tokenCode;
-	}
+	
 	
 }

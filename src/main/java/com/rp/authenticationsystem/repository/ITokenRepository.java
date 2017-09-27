@@ -9,4 +9,8 @@ import com.rp.authenticationsystem.model.User;
 @Repository
 public interface ITokenRepository extends JpaRepository<Token, Long>{
 
+	Integer countByUser(User user);
+
+	Token findByUserAndIsExpired(User user, boolean b);
+
 }

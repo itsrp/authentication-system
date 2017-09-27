@@ -1,5 +1,6 @@
 package com.rp.authenticationsystem.controller;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -36,9 +37,9 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/verification", method = RequestMethod.GET)
-	public ResponseEntity<Response> verifyEmail(@RequestParam Long userId, @RequestParam String code) {
-		LOGGER.info("Email verification request for user:" + userId);
-		userService.verifyEmail(userId, code);
+	public ResponseEntity<Response> verifyEmail(@RequestParam String emailId, @RequestParam String code) {
+		LOGGER.info("Email verification request for emailId:" + emailId);
+		userService.verifyEmail(emailId, code);
 		Response response = new Response(200, "Email verified.");
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
@@ -52,12 +53,29 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public ResponseEntity<Response> login(@RequestHeader String authorization) {
+	public ResponseEntity<Response> login(@RequestHeader String authorization, @RequestHeader(required = false) boolean forceLogin) {
 		String[] extractedAuthHeader = HashingUtil.extractAuthHeader(authorization);
 		LOGGER.info("Login request for username:" + extractedAuthHeader[0]);
-		String token = userService.login(extractedAuthHeader[0], extractedAuthHeader[1]);
+		String token = userService.login(extractedAuthHeader[0], extractedAuthHeader[1], forceLogin);
 		Response response = new Response(200, "LoggedIn successfully.");
 		response.setData(token);
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
+	public ResponseEntity<Response> forgotPassword(@RequestParam String emailId){
+		LOGGER.info("Forgot password request for email:" + emailId);
+		userService.forgotPassword(emailId);
+		Response response = new Response(200, "Verify link sent to registered email.");
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/changePassword", method = RequestMethod.GET)
+	public ResponseEntity<Response> changePassword(@RequestHeader String authorization, @RequestHeader String newPassword){
+		String[] extractedAuthHeader = HashingUtil.extractAuthHeader(authorization);
+		LOGGER.info("Change password request for username:" + extractedAuthHeader[0]);
+		userService.changePassword(extractedAuthHeader[0], extractedAuthHeader[1], newPassword);
+		Response response = new Response(200, "Password changed successfully.");
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 

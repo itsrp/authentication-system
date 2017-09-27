@@ -6,9 +6,13 @@ public interface IUserService extends ICrudService<User, Long> {
 
 	void signUp(User user);
 
-	void verifyEmail(Long userId, String code);
+	void verifyEmail(String emailId, String code);
 
 	void regenerateVerifyCode(String emailId);
 
-	String login(String emailId, String password);
+	void forgotPassword(String emailId);
+
+	void changePassword(String emailId, String oldPassword, String newPassword);
+
+	String login(String emailId, String password, boolean forceLogin);
 }

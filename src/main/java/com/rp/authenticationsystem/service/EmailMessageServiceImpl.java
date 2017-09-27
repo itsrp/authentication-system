@@ -6,6 +6,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.rp.authenticationsystem.constants.EmailTemplate;
 import com.rp.authenticationsystem.model.User;
 
 @Service
@@ -26,9 +27,9 @@ public class EmailMessageServiceImpl implements IMessageService {
 	@Override
 	public void sendVerificationCode(User user) {
 		
-		String body = String.format("To verify, please click on below link.\n%s?userId=%s&code=%s",
+		String body = String.format("To verify, please click on below link.\n%s?emailId=%s&code=%s",
 				getBasePath(),
-				user.getId(),
+				user.getEmailId(),
 				user.getVerifyCode());
 	    
 	    SimpleMailMessage message = new SimpleMailMessage(); 
@@ -41,6 +42,30 @@ public class EmailMessageServiceImpl implements IMessageService {
 
 	private String getBasePath() {
 		return host + ":" + port + "/user/verification";
+	}
+
+	@Override
+	public void sendNewPassword(User user, String newPassword) {
+		String body = String.format("New password has been generated. Please login with below details and change the password."
+				+ "\nUsername:%s\nPassword=%s",
+				user.getEmailId(),
+				newPassword);
+	    
+	    SimpleMailMessage message = new SimpleMailMessage(); 
+	    message.setTo(user.getEmailId()); 
+	    message.setSubject(appName + " - New password generated");
+	    message.setText(body);
+	    emailSender.send(message);
+		
+	}
+
+	@Override
+	public void sendNotification(String emailId, EmailTemplate emailTemplate) {
+		SimpleMailMessage message = new SimpleMailMessage(); 
+	    message.setTo(emailId); 
+	    message.setSubject(appName + " - " + emailTemplate.getSubject());
+	    message.setText(emailTemplate.getBody());
+	    emailSender.send(message);
 	}
 
 }

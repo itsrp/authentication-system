@@ -24,10 +24,16 @@ public class Token {
 	
 	private LocalDateTime loggedInDateTIme;
 	
-	private Boolean isExpired;
+	private boolean isExpired;
 	
 	public Token() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public Token(String code, User user, LocalDateTime loggedInDateTIme) {
+		this.code = code;
+		this.user = user;
+		this.loggedInDateTIme = loggedInDateTIme;
 	}
 
 	public Long getId() {
