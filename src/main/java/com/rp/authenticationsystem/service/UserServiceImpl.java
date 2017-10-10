@@ -6,16 +6,18 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.rp.authenticationsystem.constants.EmailTemplate;
+import com.rp.authenticationsystem.controller.UserController;
 import com.rp.authenticationsystem.exception.BadRequestException;
 import com.rp.authenticationsystem.exception.ConflictException;
 import com.rp.authenticationsystem.exception.ForbiddenException;
@@ -28,7 +30,7 @@ import com.rp.authenticationsystem.repository.IUserRepository;
 @Service
 public class UserServiceImpl implements IUserService{
 	
-	private Logger LOGGER = Logger.getLogger(UserServiceImpl.class.getName());
+	private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class.getName());
 	
 	@Autowired
 	private IUserRepository userRepository;
@@ -51,7 +53,7 @@ public class UserServiceImpl implements IUserService{
 	@Override
 	@Transactional
 	public void save(User entity) {
-		LOGGER.info("Saving user with email: " + entity.getEmailId());
+		LOGGER.debug("Saving user with email: " + entity.getEmailId());
 		entity.setPassword(BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt(12)));
 		userRepository.save(entity);
 	}
@@ -59,14 +61,14 @@ public class UserServiceImpl implements IUserService{
 	@Override
 	@Transactional
 	public void update(User entity) {
-		LOGGER.info("Updating user with id: " + entity.getId());
+		LOGGER.debug("Updating user with id: " + entity.getId());
 		save(entity);
 	}
 
 	@Override
 	@Transactional
 	public void delete(User entity) {
-		LOGGER.info("Deleting user with email: " + entity.getEmailId());
+		LOGGER.debug("Deleting user with email: " + entity.getEmailId());
 		userRepository.delete(entity);
 	}
 
@@ -81,6 +83,7 @@ public class UserServiceImpl implements IUserService{
 	@Override
 	@Transactional
 	public void verifyEmail(String emailId, String code) {
+		LOGGER.debug("verify email: " + emailId);
 		User user = userRepository.findByEmailId(emailId);
 		if(user == null) {
 			throw new NotFoundException("User not found. Please contact administrator.");

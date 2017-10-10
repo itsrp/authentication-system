@@ -3,6 +3,8 @@ package com.rp.authenticationsystem.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import com.rp.authenticationsystem.repository.ITokenRepository;
 
 @Service
 public class TokenServiceImpl implements ITokenService{
+	
+	private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class.getName());
 	
 	@Autowired
 	private ITokenRepository tokenRepository;
@@ -25,7 +29,6 @@ public class TokenServiceImpl implements ITokenService{
 	@Override
 	public void save(Token entity) {
 		tokenRepository.save(entity);
-		
 	}
 
 	@Override
@@ -42,6 +45,7 @@ public class TokenServiceImpl implements ITokenService{
 
 	@Override
 	public void expireToken(Long userId) {
+		LOGGER.debug("Expiring token for user:" + userId);
 		Token token = get(userId);
 		token.setExpired(true);
 		save(token);

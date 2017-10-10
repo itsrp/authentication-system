@@ -13,7 +13,7 @@ import com.rp.authenticationsystem.config.AuditorAwareImpl;
 @EnableJpaRepositories(basePackages = {"com.rp.authenticationsystem.repository"})
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class AuthenticationSystemApplication {
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(AuthenticationSystemApplication.class, args);
 	}
